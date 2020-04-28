@@ -16,25 +16,34 @@ The build process is very easy, just run the command "gcc -fPIC -shared -ldl -o 
 
 You can load amon.so within apache in different ways, such of using the default environment variables files, mod_fcgid and also with the suEXEC feature of the Apache HTTP server. 
 
+
 1) Apache's DSO module 
 
 If PHP interpreter runs in the Apache process, then you can store this directive into the environment variables file: 
 
 /etc/apache2/envvars (Debian GNU/Linux)
+
 /etc/sysconfig/httpd (CentOS GNU/Linux) 
 
 The instruction is "export LD_PRELOAD=amon.so" 
 
-2) PHP with mod_fcgid 
+
+2) PHP with mod_fcgid / PHP-FPM
 
 If you're using mod_fcgid, then you need to export amon.so directly from the wrapper that calls the php (again with "export LD_PRELOAD = amon.so):
 
 #!/bin/sh
+
 export PHPRC=/etc/php5/cgi
+
 export PHP_FCGI_MAX_REQUESTS=800
+
 export PHP_FCGI_CHILDREN=2
+
 export LD_PRELOAD = amon.so
+
 exec /usr/lib/cgi-bin/php
+
 
 3) Apache suEXEC support
 
@@ -45,8 +54,11 @@ Action php-script wrapper-del-php
 In the file "wrapper-of-php" you have to store it (and make it executable with "chmod 755 "):
 
 #!/bin/sh
+
 export LD_PRELOAD=amon.so
+
 exec /path/del/vero/php5-cgi "$@"
+
 
 
 Configuration
@@ -54,12 +66,19 @@ Configuration
 These are a pre-set of commands that the web user can run, such as:
 
 "/usr/sbin/sendmail"
+
 "/usr/lib/sendmail"
+
 "/etc/alternatives/lib.sendmail"
+
 "/usr/lib/sm.bin/sendmail"
+
 "/usr/bin/mail"
+
 ..............
+
 ..............
+
 
 These applications allow the user to send email from the web and perform operations that are not "dangerous" for the system. In order to add or delete commands, edit the variable "char * cmds []" in the source code.
 
